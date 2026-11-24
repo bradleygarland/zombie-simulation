@@ -31,9 +31,23 @@ class World:
 
         surface.fill(WORLD_BACKGROUND)
 
+        # Calculate zoomed grid spacing
+        grid_spacing = GRID_SIZE * camera.zoom
+
+        # Determine adaptive grid spacing
+        grid_multiplier = 1
+        min_screen_spacing = 24
+
+        while GRID_SIZE * grid_multiplier * camera.zoom < min_screen_spacing:
+            grid_multiplier *= 2
+
+        # Calculate grid spacing in world and screen coordinates
+        world_grid_spacing = GRID_SIZE * grid_multiplier
+        screen_grid_spacing = world_grid_spacing * camera.zoom
+
         # Calculate visible grid starting positions
-        start_x = -(camera.x % GRID_SIZE)
-        start_y = -(camera.y % GRID_SIZE)
+        start_x = -(camera.x % world_grid_spacing) * camera.zoom
+        start_y = -(camera.y % world_grid_spacing) * camera.zoom
 
         # Draw vertical grid lines
         x = start_x
@@ -42,11 +56,11 @@ class World:
             pygame.draw.line(
                 surface,
                 GRID_COLOR,
-                (int(x), 0),
-                (int(x), surface.get_height())
+                (round(x), 0),
+                (round(x), surface.get_height())
             )
 
-            x += GRID_SIZE
+            x += screen_grid_spacing
 
         # Draw horizontal grid lines
         y = start_y
@@ -55,23 +69,21 @@ class World:
             pygame.draw.line(
                 surface,
                 GRID_COLOR,
-                (0, int(y)),
-                (surface.get_width(), int(y))
+                (0, round(y)),
+                (surface.get_width(), round(y))
             )
 
-            y += GRID_SIZE
+            y += screen_grid_spacing
 
-        # Draw world boundaries
-        border_x =  -int(camera.x)
-        border_y = -int(camera.y)
-
+        # Calculate world border relative to camera and zoom
         world_rect = pygame.Rect(
-            border_x,
-            border_y,
-            self.width,
-            self.height
+            round(-camera.x * camera.zoom),
+            round(-camera.y * camera.zoom),
+            round(self.width * camera.zoom),
+            round(self.height * camera.zoom)
         )
 
+        # Draw world boundaries
         pygame.draw.rect(
             surface,
             WORLD_BORDER_COLOR,

@@ -17,6 +17,16 @@ class Camera:
         self.width = WINDOW_WIDTH
         self.height = WINDOW_HEIGHT
 
+        self.zoom = 1.0
+
+        self.min_zoom = max(
+            self.width / WORLD_WIDTH,
+            self.height / WORLD_HEIGHT
+        )
+
+        self.max_zoom = 3.0
+        self.zoom_step = 1.1
+
         self.dragging = False
 
     def handle_event(self, event):
@@ -30,6 +40,27 @@ class Camera:
         elif event.type ==pygame.MOUSEBUTTONUP:
             if event.button == 3:
                 self.dragging = False
+
+        elif event.type == pygame.MOUSEWHEEL:
+            center_x = self.x + self.width / (2 * self.zoom)
+            center_y = self.y + self.height / (2 * self.zoom)
+
+            if event.y > 0:
+                self.zoom *= self.zoom_step
+
+            elif event.y < 0:
+                self.zoom /= self.zoom_step
+
+                self.zoom = max(
+                    self.min_zoom,
+                    min(self.zoom, self.max_zoom)
+                )
+
+                # Recalculate camera position
+                self.x = center_x - self.width / (2 * self.zoom)
+                self.y = center_y - self.height / (2 * self.zoom)
+
+                self.apply_bounds()
 
         # Move camera while dragging
         elif event.type == pygame.MOUSEMOTION:
@@ -71,8 +102,11 @@ class Camera:
         self.apply_bounds()
 
     def apply_bounds(self):
-        max_x = WORLD_WIDTH - self.width
-        max_y = WORLD_HEIGHT - self.height
+        visible_width = self.width / self.zoom
+        visible_height = self.height / self.zoom
+
+        max_x = max(0, WORLD_WIDTH - visible_width)
+        max_y = max(0, WORLD_HEIGHT - visible_height)
 
         self.x = max(0, min(self.x, max_x))
         self.y = max(0, min(self.y, max_y))
