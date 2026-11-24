@@ -6,6 +6,7 @@ from settings import (
     WORLD_WIDTH,
     WORLD_HEIGHT,
     CAMERA_SPEED,
+    SHIFT_SPEED_MULTIPLIER
 )
 
 class Camera:
@@ -58,8 +59,14 @@ class Camera:
         if movement.length_squared() > 0:
             movement = movement.normalize()
 
-        self.x += movement.x * CAMERA_SPEED * dt
-        self.y += movement.y * CAMERA_SPEED * dt
+        # Shift speed multiplier
+        speed_multiplier = SHIFT_SPEED_MULTIPLIER if (
+            keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
+        ) else 1
+
+        # Apply movement
+        self.x += movement.x * CAMERA_SPEED * speed_multiplier * dt
+        self.y += movement.y * CAMERA_SPEED * speed_multiplier * dt
 
         self.apply_bounds()
 

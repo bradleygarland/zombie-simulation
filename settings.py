@@ -27,6 +27,7 @@ WORLD_BORDER_COLOR = (100, 110, 100)
 # ========================================
 
 CAMERA_SPEED = 600
+SHIFT_SPEED_MULTIPLIER = 2
 
 # ========================================
 # APPLICATION COLORS

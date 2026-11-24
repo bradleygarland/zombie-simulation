@@ -2,8 +2,8 @@ import pygame
 from pygame import camera
 
 from settings import (
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
+    WORLD_WIDTH,
+    WORLD_HEIGHT,
     GRID_SIZE,
     WORLD_BACKGROUND,
     GRID_COLOR,
@@ -12,8 +12,8 @@ from settings import (
 
 class World:
     def __init__(self):
-        self.width = WINDOW_WIDTH
-        self.height = WINDOW_HEIGHT
+        self.width = WORLD_WIDTH
+        self.height = WORLD_HEIGHT
 
     def update(self, dt):
         """
@@ -62,9 +62,12 @@ class World:
             y += GRID_SIZE
 
         # Draw world boundaries
+        border_x =  -int(camera.x)
+        border_y = -int(camera.y)
+
         world_rect = pygame.Rect(
-            -camera.x,
-            -camera.y,
+            border_x,
+            border_y,
             self.width,
             self.height
         )
@@ -73,5 +76,5 @@ class World:
             surface,
             WORLD_BORDER_COLOR,
             world_rect,
-            2
+            4
         )
