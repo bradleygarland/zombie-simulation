@@ -8,6 +8,7 @@ from settings import (
 )
 
 from world.world import World
+from world.camera import Camera
 
 def main():
 
@@ -24,15 +25,16 @@ def main():
     # Initialize clock
     clock = pygame.time.Clock()
 
-    # Initialize world
+    # Initialize world and camera
     world = World()
+    camera = Camera()
 
     # Main application loop
     running = True
 
     while running:
 
-        #Calculate delta time
+        # Calculate delta time
         dt = clock.tick(FPS) / 1000.0
 
         # Handle events
@@ -46,11 +48,17 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
-        # Update simulation
+            camera.handle_event(event)
+
+        # Get keyboard input
+        keys = pygame.key.get_pressed()
+
+        # Update simulation and camera
         world.update(dt)
+        camera.update(dt, keys)
 
         # Render world
-        world.draw(screen)
+        world.draw(screen, camera)
 
         # Update display
         pygame.display.flip()
